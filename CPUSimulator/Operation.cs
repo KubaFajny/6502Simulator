@@ -62,6 +62,9 @@ namespace CPUSimulator
             if (instruction.GetAddressMode() == AddressMode.Implied)
                 return 0;
 
+            if (instruction.GetAddressMode() == AddressMode.Accumulator)
+                return state.accumulator;
+
             if (instruction.GetAddressMode() != AddressMode.Immediate)
             {
                 int effectiveAddress = CalculateEffectiveAddress(state, bus);

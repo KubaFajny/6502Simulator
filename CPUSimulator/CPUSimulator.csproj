@@ -50,6 +50,11 @@
     <Compile Include="CPUState.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="OperationFactory.cs" />
+    <Compile Include="Operations\OperationLSR.cs" />
+    <Compile Include="Operations\OperationASL.cs" />
+    <Compile Include="Operations\OperationORA.cs" />
+    <Compile Include="Operations\OperationEOR.cs" />
+    <Compile Include="Operations\OperationAND.cs" />
     <Compile Include="Operations\OperationNOP.cs" />
     <Compile Include="Operations\OperationSBC.cs" />
     <Compile Include="Operations\OperationCMP.cs" />
