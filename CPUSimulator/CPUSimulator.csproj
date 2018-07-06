@@ -50,6 +50,15 @@
     <Compile Include="CPUState.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="OperationFactory.cs" />
+    <Compile Include="Operations\OperationBIT.cs" />
+    <Compile Include="Operations\OperationTYA.cs" />
+    <Compile Include="Operations\OperationTXA.cs" />
+    <Compile Include="Operations\OperationTXS.cs" />
+    <Compile Include="Operations\OperationTSX.cs" />
+    <Compile Include="Operations\OperationTAY.cs" />
+    <Compile Include="Operations\OperationTAX.cs" />
+    <Compile Include="Operations\OperationROR.cs" />
+    <Compile Include="Operations\OperationROL.cs" />
     <Compile Include="Operations\OperationLSR.cs" />
     <Compile Include="Operations\OperationASL.cs" />
     <Compile Include="Operations\OperationORA.cs" />

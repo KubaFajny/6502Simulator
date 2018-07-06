@@ -17,13 +17,13 @@ namespace CPUSimulator.Operations
             {
                 int effectiveAddress = CalculateEffectiveAddress(state, bus);
                 byte operandValue = bus.ReadFromMemory(effectiveAddress);
-                state.ChangeStatusFlag(StatusFlag.Carry, (operandValue & 1) == 1);
+                state.ChangeStatusFlag(StatusFlag.Carry, (operandValue & 1) == 1); // The lowest bit is displaced by the left shift and stored as carry flag
                 result = (byte)(operandValue >> 1);
                 bus.WriteToMemory(effectiveAddress, result);
             }
             else
             {
-                state.ChangeStatusFlag(StatusFlag.Carry, (state.accumulator & 1) == 1);
+                state.ChangeStatusFlag(StatusFlag.Carry, (state.accumulator & 1) == 1); // The lowest bit is displaced by the left shift and stored as carry flag
                 result = (byte)(state.accumulator >> 1);
                 state.accumulator = result;
             }
