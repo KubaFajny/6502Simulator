@@ -20,6 +20,7 @@ namespace CPUSimulator
         public CPUState()
         {
             status = 0;
+            SP = 0xFF;
         }
 
         public void ChangeStatusFlag(StatusFlag statusFlag, bool set = false)

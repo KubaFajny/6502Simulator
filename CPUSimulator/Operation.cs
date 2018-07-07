@@ -93,5 +93,17 @@ namespace CPUSimulator
         {
             state.ChangeStatusFlag(StatusFlag.Overflow, ((value ^ result) & (operandValue ^ result) & 0x80) != 0);
         }
+
+        protected void StackPush(CPUState state, Bus bus, byte data)
+        {
+            bus.WriteToMemory(Bus.STACK_ADDRESS + state.SP, data);
+            state.SP--;
+        }
+
+        protected byte StackPop(CPUState state, Bus bus)
+        {
+            state.SP++;
+            return bus.ReadFromMemory(Bus.STACK_ADDRESS + state.SP);
+        }
     }
 }

@@ -12,7 +12,8 @@ namespace CPUSimulator
     {
         Dictionary<DeviceType, Device> devices;
 
-        const int MEMORY_SIZE = 0x10000; // 64 kB
+        public const int MEMORY_SIZE = 0x10000; // 64 kB
+        public const int STACK_ADDRESS = 0x100;
 
         public Bus()
         {
