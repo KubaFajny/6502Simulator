@@ -51,6 +51,10 @@
     <Compile Include="Device.cs" />
     <Compile Include="OperationFactory.cs" />
     <Compile Include="Operations\OperationBIT.cs" />
+    <Compile Include="Operations\OperationRTI.cs" />
+    <Compile Include="Operations\OperationRTS.cs" />
+    <Compile Include="Operations\OperationJSR.cs" />
+    <Compile Include="Operations\OperationJMP.cs" />
     <Compile Include="Operations\OperationPLP.cs" />
     <Compile Include="Operations\OperationPLA.cs" />
     <Compile Include="Operations\OperationPHP.cs" />
