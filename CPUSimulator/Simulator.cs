@@ -86,10 +86,16 @@ namespace CPUSimulator
             parsedOperations.Columns.Add(new DataColumn("Operand"));
 
             int address = DEFAULT_START_ADDRESS;
-            byte opcode = 0;
+            byte lastOpcode = 0;
             do
             {
-                opcode = bus.ReadFromMemory(address);
+                byte opcode = bus.ReadFromMemory(address);
+                if (opcode == 0 && lastOpcode == 0)
+                {
+                    address++;
+                    continue;
+                }
+
                 Instruction instruction = InstructionSet.GetInstruction((Opcode)opcode);
                 byte[] operand = bus.ReadFromMemory(address + 1, instruction.GetOperandSize());
 
@@ -100,7 +106,8 @@ namespace CPUSimulator
                 parsedOperations.Rows.Add(row);
 
                 address += 1 + instruction.GetOperandSize();
-            } while (opcode != 0);
+                lastOpcode = opcode;
+            } while (address < Bus.MEMORY_SIZE);
 
             gui.UpdateOperations(parsedOperations);
         }
