@@ -15,7 +15,7 @@ namespace CPUSimulator.Operations
             byte[] returnAddress = new byte[2];
             returnAddress[0] = StackPop(state, bus); // Pop low byte
             returnAddress[1] = StackPop(state, bus); // Pop high byte
-            state.PC = BitConverter.ToInt16(returnAddress, 0);
+            state.PC = (short) (BitConverter.ToInt16(returnAddress, 0) + 1);
         }
     }
 }

@@ -135,4 +135,25 @@ LOOP:  LDA  $F1
        CPX  #$0A    ; STOP AT FIB(10)
        BMI  LOOP
        BRK
+
+
+// loop by jsr
+20 09 02 20 0c 02 20 12 02 a2 00 60 e8 e0 05 d0 fb 60 00
+
+  JSR init
+  JSR loop
+  JSR end
+
+init:
+  LDX #$00
+  RTS
+
+loop:
+  INX
+  CPX #$05
+  BNE loop
+  RTS
+
+end:
+  BRK
  */

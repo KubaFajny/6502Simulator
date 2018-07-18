@@ -16,9 +16,7 @@ namespace CPUSimulator.Operations
             StackPush(state, bus, (byte)(addressToPush >> 8)); // Push high byte
             StackPush(state, bus, (byte)addressToPush); // Push low byte
 
-            int lowByteAddress = CalculateEffectiveAddress(state, bus);
-            byte[] newProgramAddress = bus.ReadFromMemory(lowByteAddress, 2);
-            state.PC = BitConverter.ToInt16(newProgramAddress, 0);
+            state.PC = (short) CalculateEffectiveAddress(state, bus);
         }
     }
 }

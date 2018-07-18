@@ -12,9 +12,7 @@ namespace CPUSimulator.Operations
 
         public override void Execute(CPUState state, Bus bus)
         {
-            int lowByteAddress = CalculateEffectiveAddress(state, bus);
-            byte[] newProgramAddress = bus.ReadFromMemory(lowByteAddress, 2);
-            state.PC = BitConverter.ToInt16(newProgramAddress, 0);
+            state.PC = (short) CalculateEffectiveAddress(state, bus);
         }
     }
 }
