@@ -31,38 +31,88 @@ namespace CPUSimulator
             if (operation == null)
                 return;
 
+            state.PC += (ushort) (operation.GetInstruction().GetOperandSize() + 1);
             operation.Execute(state, bus);
 
             // Simulate processor speed
             Thread.Sleep(operation.GetInstruction().GetClockCycles() * CLOCK_PERIOD);
+
+            handleInterrupts();
         }
 
-        public void RunAll(short startAddress)
+        public void RunAll()
         {
-            state.PC = startAddress;
+            InvokeReset();
             do
                 RunNext();
             while (lastOpcode != 0);
         }
 
-        public void Reset(short startAddress)
+        public void InvokeReset()
         {
             state = new CPUState();
-            state.PC = startAddress;
+            byte[] newAddress = bus.ReadFromMemory(getInterruptHandler(InterruptType.Reset), 2);
+            state.PC = BitConverter.ToUInt16(newAddress, 0);
             lastOpcode = 0;
+        }
+
+        public void InvokeNMI()
+        {
+            state.nmiInvoked = true;
+        }
+
+        public void InvokeIRQ()
+        {
+            state.irqInvoked = true;
+        }
+
+        private void handleInterrupts()
+        {
+            ushort interruptHandler = 0;
+            if (state.nmiInvoked)
+            {
+                interruptHandler = getInterruptHandler(InterruptType.NMI);
+                state.nmiInvoked = false;
+            }
+            else if (state.irqInvoked && !state.HasStatusFlag(StatusFlag.InterruptDisable))
+            {
+                interruptHandler = getInterruptHandler(InterruptType.IRQ);
+                state.irqInvoked = false;
+            }
+
+            if (interruptHandler == 0)
+                return;
+
+            bus.StackPush(state, (byte) (state.PC >> 8)); // Push high byte
+            bus.StackPush(state, (byte) state.PC); // Push low byte
+            bus.StackPush(state, state.status);
+            state.ChangeStatusFlag(StatusFlag.InterruptDisable, true);
+
+            byte[] newAddress = bus.ReadFromMemory(interruptHandler, 2);
+            state.PC = BitConverter.ToUInt16(newAddress, 0);
+        }
+
+        private ushort getInterruptHandler(InterruptType interrupt)
+        {
+            switch (interrupt)
+            {
+                case InterruptType.Reset:
+                    return 0xFFFC;
+                case InterruptType.IRQ:
+                    return 0xFFFE;
+                case InterruptType.NMI:
+                    return 0xFFFA;
+            }
+
+            return 0;
         }
 
         private Operation getNextOperation()
         {
             int opAddress = state.PC;
-            byte opcode = lastOpcode = bus.ReadFromMemory(opAddress);
-            if (opcode == 0)
-                return null;
-
-            Instruction instruction = InstructionSet.GetInstruction((Opcode) opcode);
-
+            lastOpcode = bus.ReadFromMemory(opAddress);
+            Instruction instruction = InstructionSet.GetInstruction((Opcode) lastOpcode);
             byte[] operand = bus.ReadFromMemory(opAddress + 1, instruction.GetOperandSize());
-            state.PC = (short) (opAddress + 1 + operand.Length);
 
             return OperationFactory.CreateOperation(instruction, operand);
         }

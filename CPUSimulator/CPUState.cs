@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator
 {
-    public enum StatusFlag { Carry, Zero, Interrupt, Decimal, Break, Unused, Overflow, Negative }
+    public enum StatusFlag { Carry, Zero, InterruptDisable, Decimal, Break, Unused, Overflow, Negative }
+
+    public enum InterruptType
+    {
+        Reset, // a reset signal, level-triggered
+        NMI,   // a non-maskable interrupt, edge-triggered
+        IRQ    // a maskable interrupt, level-triggered
+    }
 
     public class CPUState
     {
@@ -14,8 +21,12 @@ namespace CPUSimulator
         public byte registerX;
         public byte registerY;
         public byte SP; // Stack Pointer
-        public short PC; // Program Counter
+        public ushort PC; // Program Counter
         public byte status;
+
+        // Interrupts
+        public bool nmiInvoked;
+        public bool irqInvoked;
 
         public CPUState()
         {

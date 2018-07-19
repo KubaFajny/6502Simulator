@@ -12,7 +12,7 @@ namespace CPUSimulator.Operations
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.PC = 0; // Doesn't really do this, but interrupting is not implemented yet.
+            state.irqInvoked = true;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace CPUSimulator.Operations
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.status = StackPop(state, bus);
+            state.status = bus.StackPop(state);
         }
     }
 }

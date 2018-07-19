@@ -13,10 +13,10 @@ namespace CPUSimulator.Operations
         public override void Execute(CPUState state, Bus bus)
         {
             int addressToPush = state.PC - 1;
-            StackPush(state, bus, (byte)(addressToPush >> 8)); // Push high byte
-            StackPush(state, bus, (byte)addressToPush); // Push low byte
+            bus.StackPush(state, (byte)(addressToPush >> 8)); // Push high byte
+            bus.StackPush(state, (byte)addressToPush); // Push low byte
 
-            state.PC = (short) CalculateEffectiveAddress(state, bus);
+            state.PC = (ushort) CalculateEffectiveAddress(state, bus);
         }
     }
 }

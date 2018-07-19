@@ -14,7 +14,7 @@ namespace CPUSimulator.Operations
         {
             int effectiveAddress = CalculateEffectiveAddress(state, bus);
             if (!state.HasStatusFlag(StatusFlag.Overflow))
-                state.PC = (short)effectiveAddress;
+                state.PC = (ushort)effectiveAddress;
         }
     }
 }

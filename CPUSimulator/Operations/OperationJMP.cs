@@ -12,7 +12,7 @@ namespace CPUSimulator.Operations
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.PC = (short) CalculateEffectiveAddress(state, bus);
+            state.PC = (ushort) CalculateEffectiveAddress(state, bus);
         }
     }
 }

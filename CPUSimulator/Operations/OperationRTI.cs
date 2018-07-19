@@ -12,11 +12,11 @@ namespace CPUSimulator.Operations
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.status = StackPop(state, bus);
+            state.status = bus.StackPop(state);
             byte[] returnAddress = new byte[2];
-            returnAddress[0] = StackPop(state, bus); // Pop low byte
-            returnAddress[1] = StackPop(state, bus); // Pop high byte
-            state.PC = BitConverter.ToInt16(returnAddress, 0);
+            returnAddress[0] = bus.StackPop(state); // Pop low byte
+            returnAddress[1] = bus.StackPop(state); // Pop high byte
+            state.PC = BitConverter.ToUInt16(returnAddress, 0);
         }
     }
 }

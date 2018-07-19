@@ -435,7 +435,7 @@ namespace CPUSimulator
         public static Instruction GetInstruction(Opcode opcode)
         {
             if (!instructions.ContainsKey(opcode))
-                throw new ArgumentException("Unsupported opcode given.");
+                return null;
 
             return instructions[opcode];
         }

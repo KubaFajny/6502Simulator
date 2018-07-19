@@ -12,7 +12,7 @@ namespace CPUSimulator.Operations
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.ChangeStatusFlag(StatusFlag.Interrupt, false);
+            state.ChangeStatusFlag(StatusFlag.InterruptDisable, false);
         }
     }
 }

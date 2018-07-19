@@ -10,7 +10,7 @@ namespace CPUSimulator
 {
     class Simulator
     {
-        const short DEFAULT_START_ADDRESS = 0x200;
+        const ushort DEFAULT_START_ADDRESS = 0x200;
 
         SimulatorForm gui;
         CPU cpu;
@@ -31,7 +31,7 @@ namespace CPUSimulator
 
         public void RunSimulation()
         {
-            cpu.RunAll(DEFAULT_START_ADDRESS);
+            cpu.RunAll();
             UpdateGUI();
         }
 
@@ -43,7 +43,7 @@ namespace CPUSimulator
 
         public void ResetSimulation()
         {
-            cpu.Reset(DEFAULT_START_ADDRESS);
+            cpu.InvokeReset();
             UpdateGUI();
         }
 
@@ -72,6 +72,12 @@ namespace CPUSimulator
                 }
             }
 
+            // Temporary until ROM is implemented
+            bus.WriteToMemory(0xFFFC, DEFAULT_START_ADDRESS & 0xFF);
+            bus.WriteToMemory(0xFFFD, DEFAULT_START_ADDRESS >> 8);
+            bus.WriteToMemory(0xFFFE, DEFAULT_START_ADDRESS & 0xFF);
+            bus.WriteToMemory(0xFFFF, DEFAULT_START_ADDRESS >> 8);
+
             ParseAllLoadedOperations();
             ResetSimulation();
         }
@@ -97,6 +103,9 @@ namespace CPUSimulator
                 }
 
                 Instruction instruction = InstructionSet.GetInstruction((Opcode)opcode);
+                if (instruction == null)
+                    break;
+
                 byte[] operand = bus.ReadFromMemory(address + 1, instruction.GetOperandSize());
 
                 DataRow row = parsedOperations.NewRow();

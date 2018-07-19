@@ -32,7 +32,7 @@ namespace CPUSimulator
 
             carryFlag.Checked = state.HasStatusFlag(StatusFlag.Carry);
             negativeFlag.Checked = state.HasStatusFlag(StatusFlag.Negative);
-            interruptFlag.Checked = state.HasStatusFlag(StatusFlag.Interrupt);
+            interruptFlag.Checked = state.HasStatusFlag(StatusFlag.InterruptDisable);
             breakFlag.Checked = state.HasStatusFlag(StatusFlag.Break);
             decimalFlag.Checked = state.HasStatusFlag(StatusFlag.Decimal);
             overflowFlag.Checked = state.HasStatusFlag(StatusFlag.Overflow);
@@ -49,7 +49,7 @@ namespace CPUSimulator
             operationsTable.DataSource = operations;
         }
 
-        public void UpdateCurrentOperation(short programCounter)
+        public void UpdateCurrentOperation(ushort programCounter)
         {
             operationsTable.ClearSelection();
             foreach (DataGridViewRow tableRow in operationsTable.Rows)

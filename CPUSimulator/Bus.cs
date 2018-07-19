@@ -8,7 +8,7 @@ namespace CPUSimulator
 {
     enum DeviceType { RAM }
 
-    class Bus
+    public class Bus
     {
         Dictionary<DeviceType, Device> devices;
 
@@ -71,6 +71,18 @@ namespace CPUSimulator
             sb.AppendLine(BitConverter.ToString(mem).Replace("-", " "));
 
             return sb.ToString();
+        }
+
+        public void StackPush(CPUState state, byte data)
+        {
+            WriteToMemory(STACK_ADDRESS + state.SP, data);
+            state.SP--;
+        }
+
+        public byte StackPop(CPUState state)
+        {
+            state.SP++;
+            return ReadFromMemory(STACK_ADDRESS + state.SP);
         }
     }
 }
