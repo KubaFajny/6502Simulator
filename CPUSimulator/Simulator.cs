@@ -5,171 +5,199 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Data;
+using System.Threading;
 
 namespace CPUSimulator
 {
+    /// <summary>
+    /// Connects the UI and the CPU in both ways and controls the simulation. 
+    /// This class handles the creation of the simulated computer, program loading and sending commands between the CPU and the UI.
+    /// </summary>
     class Simulator
     {
-        const ushort DEFAULT_START_ADDRESS = 0x200;
+        public const int DEFAULT_START_ADDRESS = 0x200;
+        public const int MEMORY_SIZE = 0x10000; // 64 kB
+        public const int ZP_SIZE = 0x100;
+        public const int ZP_ADDRESS = 0;
+        public const int STACK_ADDRESS = 0x100;
+        public const int STACK_SIZE = 0x100;
 
-        SimulatorForm gui;
+        SimulatorForm ui;
         CPU cpu;
         Bus bus;
 
-        public Simulator(SimulatorForm gui)
+        /// <summary>
+        /// Constructs a new Simulator instance.
+        /// </summary>
+        /// <param name="ui">The UI Form that controls the simulation.</param>
+        public Simulator(SimulatorForm ui)
         {
-            this.gui = gui;
+            this.ui = ui;
 
+            // Initialize basic components of the simulated computer
             InitializeComponents();
         }
 
-        private void InitializeComponents()
+        /// <summary>
+        /// Creates a new <see cref="CPU"/> instance along with an instance of the <see cref="Bus"/> class.
+        /// Also creates instances of the appropriate devices used in the simulated computer and "wires" them together with the CPU via the Bus.
+        /// </summary>
+        /// <param name="withROM">Optional parameter to control whether the default ROM should be loaded into the memory. Implicitly true.</param>
+        private void InitializeComponents(bool withROM = true)
         {
+            // Create the basic components
             bus = new Bus();
             cpu = new CPU(bus);
+            RAM ram = new RAM(MEMORY_SIZE);
+            ACIA acia = new ACIA();
+
+            // Set up the CPU event listeners
+            cpu.UpdateEvent += new Action<Operation>(OnCpuUpdate);
+            cpu.StartEvent += new Action(OnCpuStart);
+            cpu.StopEvent += new Action(OnCpuStop);
+
+            // Wire it all together
+            bus.AddCPU(cpu);
+            bus.AddDevice(ram, 0, 0xFFFF);
+            bus.AddDevice(acia, 0x8800, 0x8803);
+
+            // TODO: make this configurable
+            if (withROM)
+            {
+                // Create a ReadOnly memory and load it with the EhBasic ROM image
+                // It will overlap the RAM on the specified memory range
+                ROM ehbasicROM = new ROM(0x4000, File.ReadAllBytes("ROM_images/ehbasic.rom"));
+                bus.AddDevice(ehbasicROM, 0xC000, 0xFFFF);
+            }
+
+            // Reset the CPU so it will reinitialize its registers and set the program counter to the address stored in RESET vector
+            cpu.InvokeReset();
+
+            // Reinitialize the Memory dump tabs UI and fill it with dumped data from the memory
+            ui.InitializeMemoryDump(bus.DumpDevicesMemory());
         }
 
-        public void RunSimulation()
+        /// <summary>
+        /// Starts the simulation that will run until the program finishes itself or the UI requests stop.
+        /// It creates a new asynchronous task in which the simulation runs so it won't block the main thread with the UI.
+        /// If the simulation is already running, the method stops it instead.
+        /// </summary>
+        /// <returns>A new asynchronous <see cref="Task"/> instance.</returns>
+        public Task RunSimulation()
         {
-            cpu.RunAll();
-            UpdateGUI();
+            if (cpu.State.IsRunning)
+                return StopSimulation();
+            else
+                return Task.Factory.StartNew(cpu.RunAll, TaskCreationOptions.LongRunning);
         }
 
-        public void MoveToNextOperation()
+        /// <summary>
+        /// Moves the simulation one step ahead by commanding the CPU to fetch the next instruction and execute it.
+        /// It creates a new asynchronous task in which the step is run so it won't block the main thread with the UI.
+        /// </summary>
+        /// <returns>A new asynchronous <see cref="Task"/> instance.</returns>
+        public Task MoveToNextOperation()
         {
-            cpu.RunNext();
-            UpdateGUI();
+            return Task.Factory.StartNew(() => cpu.RunNext(true), TaskCreationOptions.LongRunning);
         }
 
+        /// <summary>
+        /// Resets the simulation by invoking reset in the CPU to reinitialize its registers and set the program counter.
+        /// </summary>
         public void ResetSimulation()
         {
             cpu.InvokeReset();
-            UpdateGUI();
         }
 
-        public void LoadProgramFromHex(String hexStr)
+        /// <summary>
+        /// Hard resets the simulation by recreating the simulated machine, reloading the ROM and invoking CPU reset.
+        /// </summary>
+        public void HardResetSimulation()
         {
-            int address = DEFAULT_START_ADDRESS;
-            using (StringReader sr = new StringReader(hexStr))
-            {
-                String line;
-                // TODO: rewrite this to support comments in the code
-                while ((line = sr.ReadLine()) != null)
-                {
-                    if (line.Length == 0)
-                        continue;
-
-                    line = line.Replace(" ", "");
-                    if (line.Length % 2 == 1)
-                        throw new FormatException("Code text is in wrong format.");
-
-                    byte[] bytes = new byte[line.Length / 2];
-                    for (int i = 0; i < line.Length; i += 2)
-                        bytes[i / 2] = Convert.ToByte(line.Substring(i, 2), 16);
-
-                    bus.WriteToMemory(address, bytes);
-                    address += bytes.Length;
-                }
-            }
-
-            // Temporary until ROM is implemented
-            bus.WriteToMemory(0xFFFC, DEFAULT_START_ADDRESS & 0xFF);
-            bus.WriteToMemory(0xFFFD, DEFAULT_START_ADDRESS >> 8);
-            bus.WriteToMemory(0xFFFE, DEFAULT_START_ADDRESS & 0xFF);
-            bus.WriteToMemory(0xFFFF, DEFAULT_START_ADDRESS >> 8);
-
-            ParseAllLoadedOperations();
+            InitializeComponents();
             ResetSimulation();
         }
 
-        public void LoadProgramFromFile(String file) { }
-
-        private void ParseAllLoadedOperations()
+        /// <summary>
+        /// Requests stop of the simulation. 
+        /// The stop method is executed in an asynchronous task as it needs to wait for the CPU to finish executing the current operation.
+        /// </summary>
+        /// <returns>A new asynchronous <see cref="Task"/> instance.</returns>
+        public Task StopSimulation()
         {
-            DataTable parsedOperations = new DataTable();
-            parsedOperations.Columns.Add(new DataColumn("Address", Type.GetType("System.Int16")));
-            parsedOperations.Columns.Add(new DataColumn("Opcode"));
-            parsedOperations.Columns.Add(new DataColumn("Operand"));
-
-            int address = DEFAULT_START_ADDRESS;
-            byte lastOpcode = 0;
-            do
-            {
-                byte opcode = bus.ReadFromMemory(address);
-                if (opcode == 0 && lastOpcode == 0)
-                {
-                    address++;
-                    continue;
-                }
-
-                Instruction instruction = InstructionSet.GetInstruction((Opcode)opcode);
-                if (instruction == null)
-                    break;
-
-                byte[] operand = bus.ReadFromMemory(address + 1, instruction.GetOperandSize());
-
-                DataRow row = parsedOperations.NewRow();
-                row["Address"] = address;
-                row["Opcode"] = instruction.GetOpcodeName();
-                row["Operand"] = instruction.GetOperandPretty(operand);
-                parsedOperations.Rows.Add(row);
-
-                address += 1 + instruction.GetOperandSize();
-                lastOpcode = opcode;
-            } while (address < Bus.MEMORY_SIZE);
-
-            gui.UpdateOperations(parsedOperations);
+            return Task.Factory.StartNew(cpu.Stop, TaskCreationOptions.None);
         }
 
-        private void UpdateGUI()
+        /// <summary>
+        /// Loads a new program from the given binary file.
+        /// If the simulation is already running, the method requests stop.
+        /// </summary>
+        /// <param name="file">The path to file containing the program.</param>
+        public async void LoadProgramFromFile(String file)
         {
-            gui.UpdateRegistersFromState(cpu.GetState());
-            gui.UpdateMemoryDump(bus.GetMemoryDump());
-            gui.UpdateCurrentOperation(cpu.GetState().PC);
+            // Wait until the simulation stops
+            if (cpu.State.IsRunning)
+                await StopSimulation();
+
+            // Recreate the simulated computer without loading the ROM - we don't need it now
+            InitializeComponents(false);
+
+            // Write the program code to the Memory, beginning at the default starting address
+            bus.Write(DEFAULT_START_ADDRESS, File.ReadAllBytes(file));
+
+            // Write the default starting address to the RESET vector location
+            bus.Write(0xFFFC, DEFAULT_START_ADDRESS & 0xFF);
+            bus.Write(0xFFFD, DEFAULT_START_ADDRESS >> 8);
+            bus.Write(0xFFFE, DEFAULT_START_ADDRESS & 0xFF);
+            bus.Write(0xFFFF, DEFAULT_START_ADDRESS >> 8);
+
+            // And reset the CPU to set the program counter correctly, ofcourse
+            ResetSimulation();
+        }
+
+        /// <summary>
+        /// Handles the Update event of the CPU.
+        /// This method updates the UI and handles basic input/output via the Bus and the UI.
+        /// </summary>
+        /// <param name="operation">
+        /// The operation that has been executed by the CPU before firing this event. 
+        /// The value of this parameter may be null as this event is also called on resets when no operation is executed.
+        /// </param>
+        private void OnCpuUpdate(Operation operation)
+        {
+            // Update register values and info about the current operation in the UI
+            ui.UpdateStateUI(new UpdateUIEventArgs(cpu.State, operation));
+
+            // If this operation changed the memory, update also the memory dump window
+            if (operation != null && operation.ChangesMemory())
+                ui.UpdateMemoryDump(bus.DumpDevicesMemory());
+
+            // Check if there is some output ready in the IO device and write it to the console
+            byte? output = bus.GetConsoleOutput();
+            if (output != null)
+                ui.WriteConsoleOutput(output.Value);
+
+            // Check if the user has typed in the console and send the input to the IO device if yes
+            if (ui.HasConsoleInput())
+                bus.SendConsoleInput(ui.GetConsoleInput());
+        }
+
+        /// <summary>
+        /// Handles the Start event of the CPU.
+        /// This method updates the text of the Run button on the UI.
+        /// </summary>
+        private void OnCpuStart()
+        {
+            ui.UpdateRunButton(true);
+        }
+
+        /// <summary>
+        /// Handles the Stop event of the CPU.
+        /// This method updates the text of the Run button on the UI.
+        /// </summary>
+        private void OnCpuStop()
+        {
+            ui.UpdateRunButton(false);
         }
     }
 }
-
-/* TESTING CODE:
-// First ten fibonacci numbers at address 0xF1B - 0xF24
-a9 00 85 f0 a9 01 85 f1 a2 00 a5 f1 9d 1b 0f 85 
-f2 65 f0 85 f1 a5 f2 85 f0 e8 e0 0a 30 ec 00 
-
-       LDA  #0
-       STA  $F0     ; LOWER NUMBER
-       LDA  #1
-       STA  $F1     ; HIGHER NUMBER
-       LDX  #0
-LOOP:  LDA  $F1
-       STA  $0F1B,X
-       STA  $F2     ; OLD HIGHER NUMBER
-       ADC  $F0
-       STA  $F1     ; NEW HIGHER NUMBER
-       LDA  $F2
-       STA  $F0     ; NEW LOWER NUMBER
-       INX
-       CPX  #$0A    ; STOP AT FIB(10)
-       BMI  LOOP
-       BRK
-
-
-// loop by jsr
-20 09 02 20 0c 02 20 12 02 a2 00 60 e8 e0 05 d0 fb 60 00
-
-  JSR init
-  JSR loop
-  JSR end
-
-init:
-  LDX #$00
-  RTS
-
-loop:
-  INX
-  CPX #$05
-  BNE loop
-  RTS
-
-end:
-  BRK
- */

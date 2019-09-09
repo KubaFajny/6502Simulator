@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the CLV instruction.
+    /// </summary>
     class OperationCLV : Operation
     {
-        public OperationCLV(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationCLV() {}
+
+		protected OperationCLV(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationCLV(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {

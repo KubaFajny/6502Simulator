@@ -6,24 +6,33 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the ASL instruction.
+    /// </summary>
     class OperationASL : Operation
     {
-        public OperationASL(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationASL() {}
+
+		protected OperationASL(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationASL(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
             short result;
-            if (instruction.GetAddressMode() != AddressMode.Accumulator)
+            if (Instruction.AddressMode != AddressMode.Accumulator)
             {
                 int effectiveAddress = CalculateEffectiveAddress(state, bus);
-                byte operandValue = bus.ReadFromMemory(effectiveAddress);
+                byte operandValue = bus.Read(effectiveAddress);
                 result = (short)(operandValue << 1);
-                bus.WriteToMemory(effectiveAddress, (byte)result);
+                bus.Write(effectiveAddress, (byte)result);
             }
             else
             {
-                result = (short)(state.accumulator << 1);
-                state.accumulator = (byte)result;
+                result = (short)(state.Accumulator << 1);
+                state.Accumulator = (byte)result;
             }
 
             CheckNegativeFlag(state, (byte)result);

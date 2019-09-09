@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the JSR instruction.
+    /// </summary>
     class OperationJSR : Operation
     {
-        public OperationJSR(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationJSR() {}
+
+		protected OperationJSR(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationJSR(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {

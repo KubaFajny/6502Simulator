@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the CLD instruction.
+    /// </summary>
     class OperationCLD : Operation
     {
-        public OperationCLD(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationCLD() {}
+
+		protected OperationCLD(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationCLD(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {

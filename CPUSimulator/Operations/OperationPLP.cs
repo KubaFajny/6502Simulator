@@ -6,13 +6,22 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the PLP instruction.
+    /// </summary>
     class OperationPLP : Operation
     {
-        public OperationPLP(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationPLP() {}
+
+		protected OperationPLP(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationPLP(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.status = bus.StackPop(state);
+            state.Status = bus.StackPop(state);
         }
     }
 }

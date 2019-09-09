@@ -6,17 +6,26 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the CMP instruction.
+    /// </summary>
     class OperationCMP : Operation
     {
-        public OperationCMP(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationCMP() {}
+
+		protected OperationCMP(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationCMP(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         { 
             byte operandValue = GetOperandValue(state, bus);
-            int result = state.accumulator - operandValue;
+            int result = state.Accumulator - operandValue;
             CheckZeroFlag(state, result);
             CheckNegativeFlag(state, result);
-            CheckCarryFlag(state, state.accumulator, operandValue);
+            CheckCarryFlag(state, state.Accumulator, operandValue);
         }
     }
 }

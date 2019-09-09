@@ -6,14 +6,23 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the STX instruction.
+    /// </summary>
     class OperationSTX : Operation
     {
-        public OperationSTX(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationSTX() {}
+
+		protected OperationSTX(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationSTX(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
             int effectiveAddress = CalculateEffectiveAddress(state, bus);
-            bus.WriteToMemory(effectiveAddress, state.registerX);
+            bus.Write(effectiveAddress, state.RegisterX);
         }
     }
 }

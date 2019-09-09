@@ -6,13 +6,22 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the BRK instruction.
+    /// </summary>
     class OperationBRK : Operation
     {
-        public OperationBRK(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationBRK() {}
+
+		protected OperationBRK(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationBRK(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.irqInvoked = true;
+            state.IrqInvoked = true;
         }
     }
 }

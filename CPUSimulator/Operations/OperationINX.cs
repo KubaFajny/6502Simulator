@@ -6,15 +6,24 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the INX instruction.
+    /// </summary>
     class OperationINX : Operation
     {
-        public OperationINX(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationINX() {}
+
+		protected OperationINX(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationINX(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.registerX++;
-            CheckZeroFlag(state, state.registerX);
-            CheckNegativeFlag(state, state.registerX);
+            state.RegisterX++;
+            CheckZeroFlag(state, state.RegisterX);
+            CheckNegativeFlag(state, state.RegisterX);
         }
     }
 }

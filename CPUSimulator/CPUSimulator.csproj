@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="RangeTree, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RangeTree.1.0.6\lib\net45\RangeTree.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,11 +48,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bus.cs" />
-    <Compile Include="CPU.cs" />
-    <Compile Include="CPUState.cs" />
-    <Compile Include="Device.cs" />
-    <Compile Include="OperationFactory.cs" />
+    <Compile Include="Components\ACIA.cs" />
+    <Compile Include="Components\Bus.cs" />
+    <Compile Include="Components\CPU.cs" />
+    <Compile Include="Components\CPUState.cs" />
+    <Compile Include="Components\Device.cs" />
+    <Compile Include="ConsoleControl\ConsoleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ConsoleControl\ConsoleControl.Designer.cs">
+      <DependentUpon>ConsoleControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ConsoleControl\ConsoleEventArgs.cs" />
+    <Compile Include="UpdateUIEventArgs.cs" />
+    <Compile Include="Operations\OperationFactory.cs" />
     <Compile Include="Operations\OperationBIT.cs" />
     <Compile Include="Operations\OperationRTI.cs" />
     <Compile Include="Operations\OperationRTS.cs" />
@@ -106,19 +118,24 @@
     <Compile Include="Operations\OperationLDY.cs" />
     <Compile Include="Operations\OperationLDX.cs" />
     <Compile Include="Operations\OperationLDA.cs" />
+    <Compile Include="Components\DeviceMemoryRange.cs" />
+    <Compile Include="Components\ROM.cs" />
     <Compile Include="SimulatorForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SimulatorForm.Designer.cs">
       <DependentUpon>SimulatorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Instruction.cs" />
-    <Compile Include="InstructionSet.cs" />
-    <Compile Include="Operation.cs" />
+    <Compile Include="Instructions\Instruction.cs" />
+    <Compile Include="Instructions\InstructionSet.cs" />
+    <Compile Include="Operations\Operation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RAM.cs" />
+    <Compile Include="Components\RAM.cs" />
     <Compile Include="Simulator.cs" />
+    <EmbeddedResource Include="ConsoleControl\ConsoleControl.resx">
+      <DependentUpon>ConsoleControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SimulatorForm.resx">
       <DependentUpon>SimulatorForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -131,6 +148,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -140,6 +158,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="ROM_images\ehbasic.rom">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

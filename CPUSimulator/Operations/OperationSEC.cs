@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the SEC instruction.
+    /// </summary>
     class OperationSEC : Operation
     {
-        public OperationSEC(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationSEC() {}
+
+		protected OperationSEC(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationSEC(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {

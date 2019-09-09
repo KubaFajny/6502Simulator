@@ -6,25 +6,34 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the ROL instruction.
+    /// </summary>
     class OperationROL : Operation
     {
-        public OperationROL(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationROL() {}
+
+		protected OperationROL(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationROL(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
             short result;
             int carryBit = state.HasStatusFlag(StatusFlag.Carry) ? 1 : 0;
-            if (instruction.GetAddressMode() != AddressMode.Accumulator)
+            if (Instruction.AddressMode != AddressMode.Accumulator)
             {
                 int effectiveAddress = CalculateEffectiveAddress(state, bus);
-                byte operandValue = bus.ReadFromMemory(effectiveAddress);
-                result = (short) (operandValue << 1 | carryBit); // Set the carry bit in the shifted value via bitwise OR
-                bus.WriteToMemory(effectiveAddress, (byte)result);
+                byte operandValue = bus.Read(effectiveAddress);
+                result = (short) ((operandValue << 1) | carryBit); // Set the carry bit in the shifted value via bitwise OR
+                bus.Write(effectiveAddress, (byte)result);
             }
             else
             {
-                result = (short)(state.accumulator << 1 | carryBit); // Set the carry bit in the shifted value via bitwise OR
-                state.accumulator = (byte)result;
+                result = (short)((state.Accumulator << 1) | carryBit); // Set the carry bit in the shifted value via bitwise OR
+                state.Accumulator = (byte)result;
             }
 
             CheckNegativeFlag(state, (byte)result);

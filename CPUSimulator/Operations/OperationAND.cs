@@ -6,17 +6,26 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the AND instruction.
+    /// </summary>
     class OperationAND : Operation
     {
-        public OperationAND(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationAND() {}
+
+		protected OperationAND(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationAND(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
             byte operandValue = GetOperandValue(state, bus);
-            int result = state.accumulator & operandValue;
+            int result = state.Accumulator & operandValue;
             CheckNegativeFlag(state, result);
             CheckZeroFlag(state, result);
-            state.accumulator = (byte) result;
+            state.Accumulator = (byte) result;
         }
     }
 }

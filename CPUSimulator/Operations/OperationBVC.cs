@@ -6,15 +6,23 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the BVC instruction.
+    /// </summary>
     class OperationBVC : Operation
     {
-        public OperationBVC(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationBVC() {}
+
+		protected OperationBVC(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationBVC(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
-            int effectiveAddress = CalculateEffectiveAddress(state, bus);
             if (!state.HasStatusFlag(StatusFlag.Overflow))
-                state.PC = (ushort)effectiveAddress;
+                state.PC = (ushort)CalculateEffectiveAddress(state, bus);
         }
     }
 }

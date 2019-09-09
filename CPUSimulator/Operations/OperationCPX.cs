@@ -6,17 +6,26 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the CPX instruction.
+    /// </summary>
     class OperationCPX : Operation
     {
-        public OperationCPX(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationCPX() {}
+
+		protected OperationCPX(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationCPX(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
             byte operandValue = GetOperandValue(state, bus);
-            int result = state.registerX - operandValue;
+            int result = state.RegisterX - operandValue;
             CheckZeroFlag(state, result);
             CheckNegativeFlag(state, result);
-            CheckCarryFlag(state, state.registerX, operandValue);
+            CheckCarryFlag(state, state.RegisterX, operandValue);
         }
     }
 }

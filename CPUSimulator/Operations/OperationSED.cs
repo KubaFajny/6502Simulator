@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the SED instruction.
+    /// </summary>
     class OperationSED : Operation
     {
-        public OperationSED(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationSED() {}
+
+		protected OperationSED(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationSED(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {

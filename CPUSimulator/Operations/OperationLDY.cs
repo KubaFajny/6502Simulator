@@ -6,13 +6,24 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the LDY instruction.
+    /// </summary>
     class OperationLDY : Operation
     {
-        public OperationLDY(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationLDY() {}
+
+		protected OperationLDY(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationLDY(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.registerY = GetOperandValue(state, bus);
+            state.RegisterY = GetOperandValue(state, bus);
+            CheckZeroFlag(state, state.RegisterY);
+            CheckNegativeFlag(state, state.RegisterY);
         }
     }
 }

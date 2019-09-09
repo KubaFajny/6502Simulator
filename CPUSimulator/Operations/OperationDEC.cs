@@ -6,16 +6,25 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the DEC instruction.
+    /// </summary>
     class OperationDEC : Operation
     {
-        public OperationDEC(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationDEC() {}
+
+		protected OperationDEC(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationDEC(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
             int effectiveAddress = CalculateEffectiveAddress(state, bus);
-            byte decOperand = bus.ReadFromMemory(effectiveAddress);
+            byte decOperand = bus.Read(effectiveAddress);
             --decOperand;
-            bus.WriteToMemory(effectiveAddress, decOperand);
+            bus.Write(effectiveAddress, decOperand);
             CheckZeroFlag(state, decOperand);
             CheckNegativeFlag(state, decOperand);
         }

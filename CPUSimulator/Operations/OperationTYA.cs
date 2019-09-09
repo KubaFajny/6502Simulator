@@ -6,15 +6,24 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the TYA instruction.
+    /// </summary>
     class OperationTYA : Operation
     {
-        public OperationTYA(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationTYA() {}
+
+		protected OperationTYA(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationTYA(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.accumulator = state.registerY;
-            CheckZeroFlag(state, state.accumulator);
-            CheckNegativeFlag(state, state.accumulator);
+            state.Accumulator = state.RegisterY;
+            CheckZeroFlag(state, state.Accumulator);
+            CheckNegativeFlag(state, state.Accumulator);
         }
     }
 }

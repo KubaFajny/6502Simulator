@@ -6,15 +6,24 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the TAX instruction.
+    /// </summary>
     class OperationTAX : Operation
     {
-        public OperationTAX(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationTAX() {}
+
+		protected OperationTAX(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationTAX(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.registerX = state.accumulator;
-            CheckZeroFlag(state, state.registerX);
-            CheckNegativeFlag(state, state.registerX);
+            state.RegisterX = state.Accumulator;
+            CheckZeroFlag(state, state.RegisterX);
+            CheckNegativeFlag(state, state.RegisterX);
         }
     }
 }

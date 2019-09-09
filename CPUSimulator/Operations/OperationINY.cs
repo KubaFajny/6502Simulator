@@ -6,15 +6,24 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the INY instruction.
+    /// </summary>
     class OperationINY : Operation
     {
-        public OperationINY(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationINY() {}
+
+		protected OperationINY(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationINY(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.registerY++;
-            CheckZeroFlag(state, state.registerY);
-            CheckNegativeFlag(state, state.registerY);
+            state.RegisterY++;
+            CheckZeroFlag(state, state.RegisterY);
+            CheckNegativeFlag(state, state.RegisterY);
         }
     }
 }

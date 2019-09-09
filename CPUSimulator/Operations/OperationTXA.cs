@@ -6,15 +6,24 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the TXA instruction.
+    /// </summary>
     class OperationTXA : Operation
     {
-        public OperationTXA(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationTXA() {}
+
+		protected OperationTXA(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationTXA(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.accumulator = state.registerX;
-            CheckZeroFlag(state, state.accumulator);
-            CheckNegativeFlag(state, state.accumulator);
+            state.Accumulator = state.RegisterX;
+            CheckZeroFlag(state, state.Accumulator);
+            CheckNegativeFlag(state, state.Accumulator);
         }
     }
 }

@@ -6,13 +6,24 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the LDX instruction.
+    /// </summary>
     class OperationLDX : Operation
     {
-        public OperationLDX(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationLDX() {}
+
+		protected OperationLDX(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationLDX(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.registerX = GetOperandValue(state, bus);
+            state.RegisterX = GetOperandValue(state, bus);
+            CheckZeroFlag(state, state.RegisterX);
+            CheckNegativeFlag(state, state.RegisterX);
         }
     }
 }

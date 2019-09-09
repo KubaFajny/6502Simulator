@@ -32,6 +32,7 @@ namespace CPUSimulator
         STA_ABS  = 0x8D,
         STA_INDY = 0x91,
         STA_ZPX  = 0x95,
+        STA_ABSY = 0x99,
         STA_ABSX = 0x9D,
         ADC_IMM  = 0x69,
         ADC_ZP   = 0x65,
@@ -160,6 +161,10 @@ namespace CPUSimulator
         BIT_ABS  = 0x2C
     }
 
+    /// <summary>
+    /// The InstructionSet is a static class containing a dictionary of the instructions.
+    /// It's only purpose is the fast retrieval of the instruction info for the given opcode.
+    /// </summary>
     static class InstructionSet
     {
         private static Dictionary<Opcode, Instruction> instructions;
@@ -198,6 +203,7 @@ namespace CPUSimulator
                 { Opcode.STA_ABS, new Instruction(Opcode.STA_ABS, AddressMode.Absolute, "STA", 4) },
                 { Opcode.STA_INDY, new Instruction(Opcode.STA_INDY, AddressMode.IndirectY, "STA", 5) },
                 { Opcode.STA_ZPX, new Instruction(Opcode.STA_ZPX, AddressMode.ZeroPageX, "STA", 4) },
+                { Opcode.STA_ABSY, new Instruction(Opcode.STA_ABSY, AddressMode.AbsoluteY, "STA", 4) },
                 { Opcode.STA_ABSX, new Instruction(Opcode.STA_ABSX, AddressMode.AbsoluteX, "STA", 4) },
 
                 // Store Index X in Memory
@@ -207,7 +213,7 @@ namespace CPUSimulator
 
                 // Store Index Y in Memory
                 { Opcode.STY_ZP, new Instruction(Opcode.STY_ZP, AddressMode.ZeroPage, "STY", 3) },
-                { Opcode.STY_ZPX, new Instruction(Opcode.STY_ZPX, AddressMode.ZeroPageY, "STY", 4) },
+                { Opcode.STY_ZPX, new Instruction(Opcode.STY_ZPX, AddressMode.ZeroPageX, "STY", 4) },
                 { Opcode.STY_ABS, new Instruction(Opcode.STY_ABS, AddressMode.Absolute, "STY", 4) },
 
                 // Add Memory to Accumulator with Carry
@@ -432,6 +438,11 @@ namespace CPUSimulator
             };
         }
 
+        /// <summary>
+        /// Finds the instruction object for the given opcode.
+        /// </summary>
+        /// <param name="opcode">An instruction opcode.</param>
+        /// <returns>An instance of the <see cref="CPU"/> class if such instruction exists, otherwise null.</returns>
         public static Instruction GetInstruction(Opcode opcode)
         {
             if (!instructions.ContainsKey(opcode))

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator
 {
-    enum AddressMode
+    public enum AddressMode
     {
         Accumulator,    // operand is AC (implied single byte instruction)
         Absolute,       // operand is address
@@ -23,24 +23,42 @@ namespace CPUSimulator
         ZeroPageY       // operand is zeropage address; effective address is address incremented by Y without carry
     };
 
-   class Instruction
+    /// <summary>
+    /// Represents the actual instruction stored in the memory and processed by the CPU.
+    /// This class contains basic info about the instruction such as Opcode, OpcodeName, AddressMode or ClockCycles.
+    /// </summary>
+    public class Instruction
     {
-        Opcode opcode;
-        AddressMode addressMode;
-        String opcodeName;
-        byte clockCycles;
+        public Opcode Opcode { private set; get; }
 
+        public AddressMode AddressMode { private set; get; }
+
+        public String OpcodeName { private set; get; }
+
+        public byte ClockCycles { private set; get; }
+
+        /// <summary>
+        /// Constructs a new Instruction with the specified properties.
+        /// </summary>
+        /// <param name="opcode">The opcode of this instruction.</param>
+        /// <param name="addressMode">The address mode of this instruction.</param>
+        /// <param name="opcodeName">The opcode name of this instruction.</param>
+        /// <param name="clockCycles">The clock cycles count of this instruction.</param>
         public Instruction(Opcode opcode, AddressMode addressMode, String opcodeName, byte clockCycles)
         {
-            this.opcode = opcode;
-            this.addressMode = addressMode;
-            this.opcodeName = opcodeName;
-            this.clockCycles = clockCycles;
+            Opcode = opcode;
+            AddressMode = addressMode;
+            OpcodeName = opcodeName;
+            ClockCycles = clockCycles;
         }
 
+        /// <summary>
+        /// Gets the operand size based on the addressing mode of this instruction.
+        /// </summary>
+        /// <returns>The size of this instruction's operand.</returns>
         public byte GetOperandSize()
         {
-            switch (addressMode)
+            switch (AddressMode)
             {
                 case AddressMode.Implied:
                 case AddressMode.Accumulator:
@@ -63,29 +81,15 @@ namespace CPUSimulator
             return 0;
         }
 
-        public byte GetClockCycles()
-        {
-            return clockCycles;
-        }
-
-        public AddressMode GetAddressMode()
-        {
-            return addressMode;
-        }
-
-        public Opcode GetOpcode()
-        {
-            return opcode;
-        }
-
-        public String GetOpcodeName()
-        {
-            return opcodeName;
-        }
-
+        /// <summary>
+        /// Converts the instruction operand to a pretty string in the assembler format.
+        /// </summary>
+        /// <param name="operand">The operand to be converted.</param>
+        /// <returns>A string with the operand in the pretty format.</returns>
         public String GetOperandPretty(byte[] operand)
         {
-            switch (addressMode)
+            operand = operand.Reverse().ToArray();
+            switch (AddressMode)
             {
                 case AddressMode.Absolute:
                     return "$" + BitConverter.ToString(operand).Replace("-", "");

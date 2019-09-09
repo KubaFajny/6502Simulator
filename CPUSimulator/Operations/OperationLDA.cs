@@ -6,13 +6,24 @@ using System.Threading.Tasks;
 
 namespace CPUSimulator.Operations
 {
+    /// <summary>
+    /// Implements the Operation for the LDA instruction.
+    /// </summary>
     class OperationLDA : Operation
     {
-        public OperationLDA(Instruction instruction, byte[] operand) : base(instruction, operand) { }
+        public OperationLDA() {}
+
+		protected OperationLDA(Instruction instruction, byte[] operand, ushort address) : base(instruction, operand, address) {}
+
+		public override Operation Clone(Instruction instruction, byte[] operand, ushort address) {
+			return new OperationLDA(instruction, operand, address);
+		}
 
         public override void Execute(CPUState state, Bus bus)
         {
-            state.accumulator = GetOperandValue(state, bus);
+            state.Accumulator = GetOperandValue(state, bus);
+            CheckZeroFlag(state, state.Accumulator);
+            CheckNegativeFlag(state, state.Accumulator);
         }
     }
 }
