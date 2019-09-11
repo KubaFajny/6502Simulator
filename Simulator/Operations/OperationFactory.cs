@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CPUSimulator.Operations;
+using Simulator.Operations;
 
-namespace CPUSimulator
+namespace Simulator
 {
     /// <summary>
     /// The OperationFactory is a static class used solely to create a new instance of the <see cref="Operation"/> class.

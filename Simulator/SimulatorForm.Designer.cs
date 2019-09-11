@@ -1,4 +1,4 @@
-﻿namespace CPUSimulator
+﻿namespace Simulator
 {
     partial class SimulatorForm
     {
@@ -68,7 +68,7 @@
             this.nextPageBtn = new System.Windows.Forms.Button();
             this.currentPageBox = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.consoleControl = new CPUSimulator.ConsoleControl.ConsoleControl();
+            this.consoleControl = new ConsoleControl.ConsoleControl();
             ((System.ComponentModel.ISupportInitialize)(this.operationsTable)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -486,7 +486,7 @@
             this.consoleControl.Name = "consoleControl";
             this.consoleControl.Size = new System.Drawing.Size(418, 276);
             this.consoleControl.TabIndex = 18;
-            this.consoleControl.OnConsoleInput += new CPUSimulator.ConsoleControl.ConsoleEventHandler(this.consoleControl_OnConsoleInput);
+            this.consoleControl.OnConsoleInput += new ConsoleControl.ConsoleEventHandler(this.consoleControl_OnConsoleInput);
             // 
             // SimulatorForm
             // 

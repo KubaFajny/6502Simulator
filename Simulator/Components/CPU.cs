@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace CPUSimulator
+namespace Simulator
 {
     /// <summary>
     /// Simulates the MOS 6502 Processor.

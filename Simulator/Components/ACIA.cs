@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CPUSimulator
+namespace Simulator
 {
     enum ACIAStatusFlag { PariotyError, FramingError, Overrun, RxDataFull, TxDataEmpty, DCD, DSR, Interrupt }
 

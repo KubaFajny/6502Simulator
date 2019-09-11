@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CPUSimulator.Operations
+namespace Simulator.Operations
 {
     /// <summary>
     /// Implements the Operation for the ADC instruction.

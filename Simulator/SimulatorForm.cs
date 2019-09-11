@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CPUSimulator
+namespace Simulator
 {
     public partial class SimulatorForm : Form
     {

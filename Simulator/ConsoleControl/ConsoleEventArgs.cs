@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CPUSimulator.ConsoleControl
+namespace Simulator.ConsoleControl
 {
     /// <summary>
     /// The ConsoleEventArgs are arguments for a console event.

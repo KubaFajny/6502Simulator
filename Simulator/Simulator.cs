@@ -7,7 +7,7 @@ using System.IO;
 using System.Data;
 using System.Threading;
 
-namespace CPUSimulator
+namespace Simulator
 {
     /// <summary>
     /// Connects the UI and the CPU in both ways and controls the simulation. 

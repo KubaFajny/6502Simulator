@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CPUSimulator
+namespace Simulator
 {
     /// <summary>
     /// A simple device simulating an R/W memory via byte array with fixed size.

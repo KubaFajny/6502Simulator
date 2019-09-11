@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CPUSimulator
+namespace Simulator
 {
     /// <summary>
     /// This abstract class is the superclass of all classes representing an instruction with it's operand that will be executed by the CPU.

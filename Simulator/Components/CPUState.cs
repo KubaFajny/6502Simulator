@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CPUSimulator
+namespace Simulator
 {
     public enum StatusFlag { Carry, Zero, InterruptDisable, Decimal, Break, Unused, Overflow, Negative }
 

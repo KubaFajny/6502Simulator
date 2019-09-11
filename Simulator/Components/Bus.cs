@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RangeTree;
 
-namespace CPUSimulator
+namespace Simulator
 {
     /// <summary>
     /// Connects all the simulated computer's components together. The CPU reads (writes) data from (to) other devices.

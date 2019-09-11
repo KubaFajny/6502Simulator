@@ -1,4 +1,4 @@
-﻿namespace CPUSimulator.ConsoleControl
+﻿namespace Simulator.ConsoleControl
 {
     partial class ConsoleControl
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CPUSimulator
+namespace Simulator
 {
     /// <summary>
     /// The UpdateGUIEventArgs are arguments for a UI update event.

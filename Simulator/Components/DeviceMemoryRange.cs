@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RangeTree;
 
-namespace CPUSimulator
+namespace Simulator
 {
     /// <summary>
     /// This class is used in the RangeTree representing memory mapping of devices in the simulated computer.
